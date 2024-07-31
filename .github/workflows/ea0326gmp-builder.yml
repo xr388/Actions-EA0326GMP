@@ -15,7 +15,7 @@ jobs:
       run: |
         git clone --depth=1 https://github.com/hanwckf/immortalwrt-mt798x.git
         cd immortalwrt-mt798x
-        curl -s https://github.com/hanwckf/immortalwrt-mt798x/commit/ad31ed01841e2af081803b850974c8c9367c7a27 -o ea0326gmp.patch
+        curl -s https://github.com/hanwckf/immortalwrt-mt798x/commit/ad31ed01841e2af081803b850974c8c9367c7a27.patch -o ea0326gmp.patch
         git apply ea0326gmp.patch
     - name: set-feeds
       run: |
