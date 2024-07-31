@@ -43,8 +43,8 @@ jobs:
       run: |
         cd immortalwrt-mt798x/bin/targets/*/*
         rm -rf packages
-        echo "FW_BIN=$pwd" >> $GITHUB_ENV
-        echo "FW_VER=_$(cat version.buildinfo)" >> $GITHUB_ENV
+        echo "FW_BIN=$PWD" >> $GITHUB_ENV
+        echo "FW_VER=$(cat version.buildinfo)" >> $GITHUB_ENV
 #   - name: Upload
 #     uses: actions/upload-artifact@master
 #     with:
