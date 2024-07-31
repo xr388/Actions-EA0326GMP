@@ -19,14 +19,18 @@ jobs:
         git apply ea0326gmp.patch
     - name: set-feeds
       run: |
+        cd immortalwrt-mt798x
         ./scripts/feeds update -a
         ./scripts/feeds install -a
     - name: build-config
       run: |
+        cd immortalwrt-mt798x
         cp -f defconfig/mt7981-ax3000.config .config
         make menuconfig
     - name: build
-      run: make -j$(nproc)
+      run: |
+        cd immortalwrt-mt798x
+        make -j$(nproc)
     - name: upload
       uses: actions/upload-artifact@master
       with:
