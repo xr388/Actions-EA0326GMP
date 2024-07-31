@@ -1,4 +1,4 @@
-name: Nokia EA0326GMP
+name: Build Nokia EA0326GMP
 on: workflow_dispatch
 env:
   COMMIT_HASH: ad31ed01841e2af081803b850974c8c9367c7a27
