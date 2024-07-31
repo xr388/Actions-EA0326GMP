@@ -1,5 +1,5 @@
 name: Nokia EA0326GMP
-on: push
+on: workflow_dispatch
 env:
   COMMIT_HASH: ad31ed01841e2af081803b850974c8c9367c7a27
 jobs:
@@ -8,15 +8,15 @@ jobs:
     steps:
     - name: Set up env
       run: |
-        sudo apt update -y > /dev/null
-        sudo apt full-upgrade -y > /dev/null
+        sudo apt update -y
+        sudo apt full-upgrade -y
         sudo apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
         bzip2 ccache clang clangd cmake cpio curl device-tree-compiler ecj fastjar flex gawk gettext gcc-multilib \
         g++-multilib git gperf haveged help2man intltool lib32gcc-s1 libc6-dev-i386 libelf-dev libglib2.0-dev \
         libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5 libncursesw5-dev libreadline-dev \
         libssl-dev libtool lld lldb lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 \
         python3 python3-pip python3-ply python-docutils qemu-utils re2c rsync scons squashfs-tools subversion swig \
-        texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev > /dev/null
+        texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
     - name: Set up repo
       run: |
         git clone --depth=1 https://github.com/hanwckf/immortalwrt-mt798x.git
@@ -26,8 +26,8 @@ jobs:
     - name: Set up feeds
       run: |
         cd immortalwrt-mt798x
-        ./scripts/feeds update -a > /dev/null
-        ./scripts/feeds install -a > /dev/null
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
     - name: Set up config
       run: |
         cd immortalwrt-mt798x
@@ -39,10 +39,22 @@ jobs:
         make defconfig
     - name: Build
       run: cd immortalwrt-mt798x && make -j$(nproc)
-    - name: Upload
-      uses: actions/upload-artifact@master
+    - name: Organization
+      run: |
+        cd immortalwrt-mt798x/bin/targets/*/*
+        rm -rf packages
+        echo "FW_BIN=$pwd" >> $GITHUB_ENV
+        echo "FW_VER=_$(cat version.buildinfo)" >> $GITHUB_ENV
+#   - name: Upload
+#     uses: actions/upload-artifact@master
+#     with:
+#       name: nokia-ea0326gmp-bin-${{ env.FW_VER }}
+#       path: ${{ env.FW_BIN }}/*
+    - name: Release
+      uses: softprops/action-gh-release@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: nokia-ea0326gmp-bin
-        path: |
-          immortalwrt-mt798x/bin/targets/mediatek/mt7981/*.bin
-          immortalwrt-mt798x/bin/targets/mediatek/mt7981/sha256sums
+        tag_name: $(date + "%Y.%m.%d-%H%M")
+        body_path: None
+        files: ${{ env.FW_BIN }}/*
