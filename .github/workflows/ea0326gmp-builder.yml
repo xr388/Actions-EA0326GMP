@@ -1,0 +1,31 @@
+name: EA0326GMP
+on: push
+env:
+  SSH_ACTIONS: true
+jobs:
+  build-firmware:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: set-env
+      run: sudo bash -c 'bash <(curl -s https://build-scripts.immortalwrt.eu.org/init_build_environment.sh)'
+    - name: set-repo
+      run: |
+        git clone --depth=1 https://github.com/hanwckf/immortalwrt-mt798x.git
+        curl -s https://github.com/hanwckf/immortalwrt-mt798x/commit/ad31ed01841e2af081803b850974c8c9367c7a27 -o ea0326gmp.patch
+        git apply ea0326gmp.patch
+    - name: set-feeds
+      run: |
+        cd immortalwrt-mt798x
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+    - name: build-config
+      run: |
+        cp -f defconfig/mt7981-ax3000.config .config
+        make menuconfig
+    - name: build
+      run: make -j$(nproc)
+    - name: upload
+      uses: actions/upload-artifact@master
+      with:
+        name: immortalwrt-mt798x-built
+        path: immortalwrt-mt798x/bin
