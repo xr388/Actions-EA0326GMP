@@ -1,15 +1,15 @@
-name: EA0326GMP
+name: Nokia EA0326GMP
 on: push
 env:
   COMMIT_HASH: ad31ed01841e2af081803b850974c8c9367c7a27
 jobs:
-  build-firmware:
+  BUILD_FW:
     runs-on: ubuntu-20.04
     steps:
-    - name: set-env
+    - name: Set up env
       run: |
-        sudo apt update -y
-        sudo apt full-upgrade -y
+        sudo apt update -y > /dev/null
+        sudo apt full-upgrade -y > /dev/null
         sudo apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
         bzip2 ccache clang clangd cmake cpio curl device-tree-compiler ecj fastjar flex gawk gettext gcc-multilib \
         g++-multilib git gperf haveged help2man intltool lib32gcc-s1 libc6-dev-i386 libelf-dev libglib2.0-dev \
@@ -17,29 +17,32 @@ jobs:
         libssl-dev libtool lld lldb lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 \
         python3 python3-pip python3-ply python-docutils qemu-utils re2c rsync scons squashfs-tools subversion swig \
         texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev > /dev/null
-    - name: set-repo
+    - name: Set up repo
       run: |
         git clone --depth=1 https://github.com/hanwckf/immortalwrt-mt798x.git
         cd immortalwrt-mt798x
         curl -s https://github.com/hanwckf/immortalwrt-mt798x/commit/$COMMIT_HASH.patch -o ea0326gmp.patch
         git apply ea0326gmp.patch
-    - name: set-feeds
+    - name: Set up feeds
       run: |
         cd immortalwrt-mt798x
-        ./scripts/feeds update -a
-        ./scripts/feeds install -a
-    - name: set-config
+        ./scripts/feeds update -a > /dev/null
+        ./scripts/feeds install -a > /dev/null
+    - name: Set up config
       run: |
         cd immortalwrt-mt798x
-        echo CONFIG_TARGET_mediatek=y > .config
-        echo CONFIG_TARGET_mediatek_mt7981=y >> .config
-        echo CONFIG_TARGET_mediatek_mt7981_DEVICE_nokia_ea0326gmp=y >> .config
+        cp -f defconfig/mt7981-ax3000.config .config
+        sed -i '/CONFIG_TARGET_mediatek_mt7981=y/a\CONFIG_TARGET_mediatek_mt7981_DEVICE_nokia_ea0326gmp=y' .config
+        sed -i 's/CONFIG_TARGET_MULTI_PROFILE=y//g' .config
+        sed -i 's/CONFIG_TARGET_DEVICE_mediatek_mt7981_DEVICE_.*=y//g' .config
+        sed -i 's/CONFIG_TARGET_DEVICE_PACKAGES_mediatek_mt7981_DEVICE_.*=""//g' .config
         make defconfig
-        cat .config
-    - name: build
+    - name: Build
       run: cd immortalwrt-mt798x && make -j$(nproc)
-    - name: upload
+    - name: Upload
       uses: actions/upload-artifact@master
       with:
-        name: immortalwrt-mt798x-built
-        path: immortalwrt-mt798x/bin
+        name: nokia-ea0326gmp-bin
+        path: |
+          immortalwrt-mt798x/bin/targets/mediatek/mt7981/*.bin
+          immortalwrt-mt798x/bin/targets/mediatek/mt7981/sha256sums
