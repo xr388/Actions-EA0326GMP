@@ -33,8 +33,7 @@ jobs:
         cd immortalwrt-mt798x
         echo CONFIG_TARGET_mediatek=y > .config
         echo CONFIG_TARGET_mediatek_mt7981=y >> .config
-        echo CONFIG_TARGET_DEVICE_mediatek_mt7981_DEVICE_nokia_ea0326gmp=y >> .config
-        echo CONFIG_TARGET_DEVICE_PACKAGES_mediatek_mt7981_DEVICE_nokia_ea0326gmp="" >> .config
+        echo CONFIG_TARGET_mediatek_mt7981_DEVICE_nokia_ea0326gmp=y >> .config
         make defconfig
         cat .config
     - name: build
