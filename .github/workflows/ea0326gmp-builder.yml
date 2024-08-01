@@ -56,5 +56,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: $(date + "%Y.%m.%d-%H%M")
-        body_path: None
         files: ${{ env.FW_BIN }}/*
