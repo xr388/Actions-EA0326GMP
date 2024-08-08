@@ -1,4 +1,4 @@
-name: Build Nokia EA0326GMP
+name: Build Nokia EA0326GMP 237
 on: workflow_dispatch
 env:
   COMMIT_HASH: ad31ed01841e2af081803b850974c8c9367c7a27
@@ -44,7 +44,7 @@ jobs:
     - name: Upload
       uses: actions/upload-artifact@master
       with:
-        name: nokia-ea0326gmp-bin-padavanonly-${{ env.FW_VER }}
+        name: nokia-ea0326gmp-bin-237-${{ env.FW_VER }}
         path: ${{ env.FW_BIN }}/*
 #   - name: Release
 #     uses: softprops/action-gh-release@master
